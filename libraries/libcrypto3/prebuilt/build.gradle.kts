@@ -68,11 +68,11 @@ val generateWasmTestRunner by tasks.registering(DefaultGenerateWasmTestRunner::c
     inputLibraryFile.set(linkWasm.flatMap { it.producedLibraryFile })
 }
 
-val generateWasmNpmModule = tasks.registerGenerateWasmNpmModuleTask {
-    dependsOn(linkWasm)
-    inputLibraryDirectory.set(linkWasm.flatMap { it.outputDirectory })
-    inputLibraryName.set(linkWasm.flatMap { it.producedLibraryFile }.map { it.asFile.name })
-}
+//val generateWasmNpmModule = tasks.registerGenerateWasmNpmModuleTask {
+//    dependsOn(linkWasm)
+//    inputLibraryDirectory.set(linkWasm.flatMap { it.outputDirectory })
+//    inputLibraryName.set(linkWasm.flatMap { it.producedLibraryFile }.map { it.asFile.name })
+//}
 
 tasks.withType<MergeSourceSetFolders>().configureEach {
     //TODO: should only depend for JNI folder
@@ -101,11 +101,11 @@ kotlin {
             resources.srcDir(copyLibrariesForJvm.map { it.destinationDir })
         }
         jsMain {
-            dependencies {
-                api(generateWasmNpmModule.map {
-                    npm(libname, it.outputDirectory.get().asFile)
-                })
-            }
+//            dependencies {
+//                api(generateWasmNpmModule.map {
+//                    npm(libname, it.outputDirectory.get().asFile)
+//                })
+//            }
         }
     }
     targets.all {
@@ -118,19 +118,19 @@ kotlin {
             }
         }
     }
-    wasm {
-        nodejs {
-            testTask {
-                dependsOn(generateWasmTestRunner)
-                val originalPath = inputFileProperty.get().asFile.absolutePath.replace(".mjs", ".uninstantiated.mjs")
-                //TODO: what to do here???
-                generateWasmTestRunner.get().instantiateFile.set(originalPath)
-                inputFileProperty.set(generateWasmTestRunner.flatMap { it.testRunnerFile })
-            }
-        }
-    }
+//    wasm {
+//        nodejs {
+//            testTask {
+//                dependsOn(generateWasmTestRunner)
+//                val originalPath = inputFileProperty.get().asFile.absolutePath.replace(".mjs", ".uninstantiated.mjs")
+//                //TODO: what to do here???
+//                generateWasmTestRunner.get().instantiateFile.set(originalPath)
+//                inputFileProperty.set(generateWasmTestRunner.flatMap { it.testRunnerFile })
+//            }
+//        }
+//    }
 }
 
 //TODO: hack to resolve dependencies
-tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(generateWasmNpmModule)
-tasks.named("compileKotlinJs") { dependsOn(generateWasmNpmModule) }
+//tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(generateWasmNpmModule)
+//tasks.named("compileKotlinJs") { dependsOn(generateWasmNpmModule) }

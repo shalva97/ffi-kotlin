@@ -6,7 +6,7 @@ kotlin {
     js {
         nodejs()
     }
-    wasm {
-        nodejs()
-    }
+//    wasm {
+//        nodejs()
+//    }
 }
